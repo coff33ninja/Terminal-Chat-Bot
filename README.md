@@ -495,6 +495,8 @@ Check `bot.log` for detailed error messages and debugging info.
 ## 📚 Documentation
 
 - [Training Guide](docs/TRAINING.md) - Complete model training guide
+- [AI Memory System](docs/AI_MEMORY_SYSTEM.md) - How auto-memory works
+- [Future Features](docs/FUTURE_FEATURES.md) - Roadmap and planned features
 - [API Documentation](https://ai.google.dev/docs) - Gemini API docs
 - [Transformers](https://huggingface.co/docs/transformers) - Model training docs
 
@@ -508,9 +510,16 @@ Contributions are welcome! Here's how you can help:
 - Include logs, error messages, and steps to reproduce
 
 ### Suggesting Features
+- Check the [Future Features Roadmap](docs/FUTURE_FEATURES.md) first
 - Open an issue with the `enhancement` label
 - Describe the feature and use case
 - Explain how it would benefit users
+
+### Implementing Features
+- See [Future Features](docs/FUTURE_FEATURES.md) for planned features
+- Pick a feature or suggest a new one
+- Follow the implementation guidelines
+- Submit a pull request
 
 ### Pull Requests
 1. Fork the repository
@@ -546,6 +555,7 @@ This project is open source. Check individual model licenses when training custo
 
 - **GitHub Repository**: https://github.com/coff33ninja/Terminal-Chat-Bot
 - **Report Issues**: https://github.com/coff33ninja/Terminal-Chat-Bot/issues
+- **Feature Roadmap**: [docs/FUTURE_FEATURES.md](docs/FUTURE_FEATURES.md)
 - **Gemini API**: https://makersuite.google.com/app/apikey
 - **Training Guide**: [docs/TRAINING.md](docs/TRAINING.md)
 
