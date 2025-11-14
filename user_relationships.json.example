@@ -1,0 +1,12 @@
+{
+  "example_user": {
+    "user_id": "example_user",
+    "relationship_level": "stranger",
+    "interaction_count": 0,
+    "last_interaction": null,
+    "mood_history": [],
+    "compliments_given": 0,
+    "compliments_received": 0,
+    "created_at": "2024-01-01T00:00:00"
+  }
+}
