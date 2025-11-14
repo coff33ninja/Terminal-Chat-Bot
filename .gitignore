@@ -67,6 +67,7 @@ tmp/
 # User Data
 persona_card.json.backup
 social_data.json
+user_relationships.json
 
 # OS
 Thumbs.db
