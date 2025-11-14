@@ -1,0 +1,86 @@
+# Environment and API Keys
+.env
+.env.local
+.env.*.local
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual Environments
+.venv/
+venv/
+ENV/
+env/
+
+# Database and Data Files
+data/
+*.db
+*.sqlite
+*.sqlite3
+
+# Training Data and Models
+training_data/
+trained_models/
+*.pth
+*.bin
+*.safetensors
+*.ckpt
+
+# Logs
+*.log
+logs/
+bot.log
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Temporary Files
+*.tmp
+*.temp
+temp/
+tmp/
+
+# User Data
+persona_card.json.backup
+social_data.json
+
+# OS
+Thumbs.db
+.DS_Store
+desktop.ini
+
+# Jupyter Notebooks
+.ipynb_checkpoints/
+*.ipynb
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Documentation builds
+docs/_build/
