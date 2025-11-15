@@ -252,6 +252,7 @@ class TerminalInterface:
   !mood                 Check bot's mood
   !relationship         Check your relationship level
   !compliment           Give the bot a compliment
+  !personality [name]   Switch bot personality
   exit, quit            Exit the chat
 
 {Fore.GREEN if self.colors_enabled else ''}💡 Tip: You can chat without commands - just type your message!{Style.RESET_ALL if self.colors_enabled else ''}
@@ -297,6 +298,7 @@ class TerminalInterface:
             'mood': 'Check the bot\'s current mood. Usage: !mood',
             'relationship': 'Check your relationship level. Usage: !relationship',
             'compliment': 'Give the bot a compliment. Usage: !compliment',
+            'personality': 'Switch bot personality. Usage: !personality [name] (e.g., !personality tsundere)',
         }
         
         help_msg = command_help.get(command, f"No help available for '{command}'. Type !help to see all commands.")

@@ -381,8 +381,13 @@ class CommandHandlers:
     async def handle_help(self, args: List[str]) -> str:
         """Handle help command"""
         try:
-            # Help is handled by terminal interface
-            return "SHOW_HELP"  # Special signal for terminal interface
+            # Help is handled by interface (terminal or TUI)
+            if args:
+                # Specific command help requested
+                return f"SHOW_HELP:{args[0]}"
+            else:
+                # Show all commands
+                return "SHOW_HELP"
         except Exception as e:
             logger.error(f"Help command error: {e}")
             return "Error showing help."
@@ -558,6 +563,72 @@ Keep chatting with me to improve our relationship!"""
         except Exception as e:
             logger.error(f"Compliment command error: {e}")
             return "Thank you! That's very kind of you."
+    
+    async def handle_personality(self, args: List[str]) -> str:
+        """Handle personality switching"""
+        try:
+            if not args:
+                # Show current personality and available personas
+                current = self.persona_manager.get_current_persona_summary()
+                available = self.persona_manager.list_personas()
+                
+                personas_list = "\n".join([f"  • **{p}**" for p in available])
+                
+                return f"""🎭 Personality Switching
+
+**Current Persona:** {current['name']}
+**Type:** {current['personality']}
+**Description:** {current.get('description', 'No description')}
+
+**Available Personas:**
+{personas_list}
+
+**Usage:** !personality <name>
+**Example:** !personality tsundere
+
+**Note:** Personas are loaded from the personality/ folder"""
+            
+            # Switch personality
+            persona_name = args[0].lower()
+            
+            success, message = self.persona_manager.set_persona_by_name(persona_name)
+            
+            if success:
+                # Reload the bot name after switching
+                new_name = self.persona_manager.get_name()
+                
+                # Update terminal interface if present
+                try:
+                    if hasattr(self.bot, 'interface') and getattr(self.bot, 'interface'):
+                        if hasattr(self.bot.interface, 'update_bot_name'):
+                            self.bot.interface.update_bot_name(new_name, refresh_welcome=False)
+                        else:
+                            self.bot.interface.bot_name = new_name
+                except Exception:
+                    pass
+                
+                # Update TUI if present
+                try:
+                    if hasattr(self.bot, 'app') and getattr(self.bot, 'app'):
+                        if hasattr(self.bot.app, 'update_bot_name'):
+                            self.bot.app.update_bot_name(new_name)
+                        else:
+                            self.bot.app.bot_name = new_name
+                            try:
+                                self.bot.app.title = f"Terminal Chat - {new_name}"
+                            except Exception:
+                                pass
+                except Exception:
+                    pass
+                
+                return f"✅ {message}\n\n**New persona:** {new_name}"
+            else:
+                available = self.persona_manager.list_personas()
+                return f"❌ {message}\n\nAvailable personas: {', '.join(available)}"
+            
+        except Exception as e:
+            logger.error(f"Personality command error: {e}")
+            return f"❌ Error switching personality: {e}"
     
     # ==================== Training Data Commands ====================
     

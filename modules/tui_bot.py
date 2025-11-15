@@ -168,6 +168,7 @@ class TUIBot:
         self.parser.register_handler('mood', self.handlers.handle_mood)
         self.parser.register_handler('relationship', self.handlers.handle_relationship)
         self.parser.register_handler('compliment', self.handlers.handle_compliment)
+        self.parser.register_handler('personality', self.handlers.handle_personality)
         # Persona management
         self.parser.register_handler('persona', self.handlers.handle_persona)
         
@@ -205,6 +206,10 @@ class TUIBot:
                     # Handle special responses
                     if response == "SHOW_HELP":
                         self.app.action_help()
+                    elif response.startswith("SHOW_HELP:"):
+                        # Detailed help for specific command
+                        command = response.split(":", 1)[1]
+                        self.app.action_help(command)
                     elif response == "STREAMING_COMPLETE":
                         pass  # Already handled
                     else:

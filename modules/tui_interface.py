@@ -301,8 +301,15 @@ if TEXTUAL_AVAILABLE:
             chat_container.remove_children()
             self.add_bot_message("Chat cleared!")
         
-        def action_help(self) -> None:
-            """Show help"""
+        def action_help(self, command: str = None) -> None:
+            """Show help - all commands or specific command"""
+            if command:
+                self._show_command_help(command)
+            else:
+                self._show_all_commands()
+        
+        def _show_all_commands(self) -> None:
+            """Show all available commands"""
             help_text = """[bold cyan]Available Commands:[/bold cyan]
 
 [yellow]AI & Chat:[/yellow]
@@ -352,6 +359,7 @@ if TEXTUAL_AVAILABLE:
   !mood                 Check bot's mood
   !relationship         Check your relationship level
   !compliment           Give the bot a compliment
+  !personality [name]   Switch bot personality
   exit, quit            Exit the chat
 
 [green]Shortcuts:[/green]
@@ -361,6 +369,52 @@ if TEXTUAL_AVAILABLE:
 
 [green]💡 Tip: You can chat without commands - just type your message![/green]"""
             self.add_bot_message(help_text)
+        
+        def _show_command_help(self, command: str) -> None:
+            """Show detailed help for a specific command"""
+            command = command.lower().lstrip('!')
+            
+            command_help = {
+                'ai': 'Ask the AI a question. Usage: !ai <your question>',
+                'ask': 'Alias for !ai. Ask the AI a question.',
+                'chat': 'Alias for !ai. Chat with the AI.',
+                'time': 'Get the current time. Usage: !time',
+                'calc': 'Calculate a math expression. Usage: !calc 2+2*5',
+                'dice': 'Roll dice. Usage: !dice [sides] (default 6)',
+                'flip': 'Flip a coin. Usage: !flip',
+                'weather': 'Get weather for a city. Usage: !weather <city name>',
+                'fact': 'Get a random fact. Usage: !fact',
+                'joke': 'Get a random joke. Usage: !joke',
+                'catfact': 'Get a cat fact. Usage: !catfact',
+                'game': 'Start a game. Usage: !game guess [max_number]',
+                'guess': 'Make a guess in number game. Usage: !guess <number>',
+                'rps': 'Play rock-paper-scissors. Usage: !rps <rock|paper|scissors>',
+                '8ball': 'Ask the magic 8-ball. Usage: !8ball <question>',
+                'trivia': 'Start a trivia question. Usage: !trivia',
+                'answer': 'Answer trivia or game. Usage: !answer <your answer>',
+                'search': 'Search the web. Usage: !search <query>',
+                'find': 'Alias for !search. Search the web.',
+                'training_stats': 'View training data statistics. Usage: !training_stats',
+                'training_export': 'Export training data. Usage: !training_export <openai|llama|alpaca>',
+                'train_model': 'Train a custom AI model. Usage: !train_model <tiny|small|medium|large> [epochs]',
+                'list_models': 'List your trained models. Usage: !list_models',
+                'training_requirements': 'Show training hardware requirements. Usage: !training_requirements [size]',
+                'memories': 'View what the AI remembers about you. Usage: !memories',
+                'recall': 'Retrieve a specific memory. Usage: !recall <key>',
+                'remember': 'Manually add a memory. Usage: !remember <key> <value>',
+                'forget': 'Delete a memory. Usage: !forget <key>',
+                'help': 'Show help. Usage: !help [command]',
+                'memory': 'View/set conversation memory (0=unlimited). Usage: !memory [number]',
+                'stats': 'View your usage statistics. Usage: !stats',
+                'mood': 'Check the bot\'s current mood. Usage: !mood',
+                'relationship': 'Check your relationship level. Usage: !relationship',
+                'compliment': 'Give the bot a compliment. Usage: !compliment',
+                'personality': 'Switch bot personality. Usage: !personality [name] (e.g., !personality tsundere)',
+            }
+            
+            help_msg = command_help.get(command, f"No help available for '{command}'. Type !help to see all commands.")
+            
+            self.add_bot_message(f"[bold cyan]Help for '{command}':[/bold cyan]\n\n{help_msg}")
         
         def set_command_callback(self, callback):
             """Set the callback for processing commands"""
