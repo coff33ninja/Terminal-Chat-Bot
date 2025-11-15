@@ -298,6 +298,9 @@ class TUIBot:
             user_question = f"""The user asked: "{question}"\n{context_text}\n\nPlease answer the user's question. Keep your response under 1800 characters."""
             prompt = self.persona_manager.get_ai_prompt(user_question, relationship_level)
             
+            # Show typing indicator
+            self.app.show_typing_indicator()
+            
             # Start streaming
             self.app.start_streaming_message()
             response_text = ""

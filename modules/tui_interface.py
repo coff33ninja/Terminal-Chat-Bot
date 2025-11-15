@@ -306,18 +306,32 @@ if TEXTUAL_AVAILABLE:
             """Append text to the current streaming message"""
             if self.streaming_message:
                 self.streaming_message.append_text(text)
-                chat_container = self.query_one("#chat-container", ScrollableContainer)
-                chat_container.scroll_end(animate=False)
+                # Only scroll every 10 chunks to improve performance
+                if not hasattr(self, '_stream_chunk_count'):
+                    self._stream_chunk_count = 0
+                self._stream_chunk_count += 1
+                if self._stream_chunk_count % 10 == 0:
+                    chat_container = self.query_one("#chat-container", ScrollableContainer)
+                    chat_container.scroll_end(animate=False)
         
         def end_streaming_message(self):
             """End the current streaming message"""
             self.streaming_message = None
+            # Final scroll to ensure we're at the bottom
+            chat_container = self.query_one("#chat-container", ScrollableContainer)
+            chat_container.scroll_end(animate=False)
+            # Reset chunk counter
+            self._stream_chunk_count = 0
             self.update_status("Ready")
         
         def update_status(self, status: str):
             """Update the status bar"""
             status_bar = self.query_one("#status-bar", Static)
             status_bar.update(status)
+        
+        def show_typing_indicator(self):
+            """Show typing indicator"""
+            self.update_status(f"💭 {self.bot_name} is typing...")
         
         def action_clear(self) -> None:
             """Clear the chat"""
