@@ -255,6 +255,21 @@ if TEXTUAL_AVAILABLE:
             chat_container.mount(ChatMessage(self.bot_name, message, is_bot=True))
             chat_container.scroll_end(animate=False)
             self.update_status("Ready")
+
+        def update_bot_name(self, new_name: str):
+            """Update the bot name across the app (title and status) and announce the change."""
+            try:
+                self.bot_name = new_name
+                try:
+                    self.title = f"Terminal Chat - {self.bot_name}"
+                except Exception:
+                    pass
+                try:
+                    self.add_bot_message(f"Persona switched to {self.bot_name}")
+                except Exception:
+                    pass
+            except Exception:
+                pass
         
         def start_streaming_message(self):
             """Start a new streaming message"""

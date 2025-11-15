@@ -85,3 +85,7 @@ htmlcov/
 
 # Documentation builds
 docs/_build/
+
+
+#Ignore vscode AI rules
+.github\instructions\codacy.instructions.md

@@ -472,6 +472,72 @@ Keep chatting with me to improve our relationship!"""
         except Exception as e:
             logger.error(f"Relationship command error: {e}")
             return "Error getting relationship status."
+
+    async def handle_persona(self, args: List[str]) -> str:
+        """Handle persona commands: list, set <name>, show
+
+        Usage:
+          !persona list       - lists available personas
+          !persona show       - shows the currently loaded persona summary
+          !persona set <name> - switch to a persona from `personality/<name>.json`
+        """
+        try:
+            if not args or args[0].lower() == 'show':
+                summary = self.persona_manager.get_current_persona_summary()
+                name = summary.get('name') or 'Unknown'
+                personality = summary.get('personality') or 'Unknown'
+                desc = summary.get('description') or ''
+                return f"Current persona: **{name}** ({personality})\n{desc}"
+
+            cmd = args[0].lower()
+            if cmd == 'list':
+                personas = self.persona_manager.list_personas()
+                if not personas:
+                    return "No personas found in the `personality/` directory."
+                lines = "\n".join([f"- {p}" for p in personas])
+                return f"Available personas:\n{lines}"
+
+            if cmd == 'set' and len(args) > 1:
+                name = args[1]
+                success, msg = self.persona_manager.set_persona_by_name(name)
+                # Update terminal interface if present
+                try:
+                    new_name = self.persona_manager.get_name()
+                    if hasattr(self.bot, 'interface') and getattr(self.bot, 'interface'):
+                        try:
+                            self.bot.interface.bot_name = new_name
+                            self.bot.interface.clear_screen()
+                            self.bot.interface.display_welcome()
+                        except Exception:
+                            pass
+
+                    # Update TUI if present
+                    if hasattr(self.bot, 'app') and getattr(self.bot, 'app'):
+                        try:
+                            # ChatApp exposes bot_name; update and refresh title
+                            if hasattr(self.bot.app, 'update_bot_name'):
+                                self.bot.app.update_bot_name(new_name)
+                            else:
+                                self.bot.app.bot_name = new_name
+                                try:
+                                    self.bot.app.title = f"Terminal Chat - {new_name}"
+                                except Exception:
+                                    pass
+                                try:
+                                    self.bot.app.add_bot_message(f"Persona switched to {new_name}")
+                                except Exception:
+                                    pass
+                        except Exception:
+                            pass
+                except Exception:
+                    pass
+
+                return msg if success else f"Failed to switch persona: {msg}"
+
+            return "Invalid persona command. Usage: !persona (list|show|set <name>)"
+        except Exception as e:
+            logger.error(f"Persona command error: {e}")
+            return "Error handling persona command."
     
     async def handle_compliment(self, args: List[str]) -> str:
         """Handle compliment command"""
