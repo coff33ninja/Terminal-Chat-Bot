@@ -251,6 +251,7 @@ class TerminalInterface:
   !stats                View your usage statistics
   !mood                 Check bot's mood
   !relationship         Check your relationship level
+  !compliment           Give the bot a compliment
   exit, quit            Exit the chat
 
 {Fore.GREEN if self.colors_enabled else ''}💡 Tip: You can chat without commands - just type your message!{Style.RESET_ALL if self.colors_enabled else ''}
@@ -286,11 +287,16 @@ class TerminalInterface:
             'train_model': 'Train a custom AI model. Usage: !train_model <tiny|small|medium|large> [epochs]',
             'list_models': 'List your trained models. Usage: !list_models',
             'training_requirements': 'Show training hardware requirements. Usage: !training_requirements [size]',
+            'memories': 'View what the AI remembers about you. Usage: !memories',
+            'recall': 'Retrieve a specific memory. Usage: !recall <key>',
+            'remember': 'Manually add a memory. Usage: !remember <key> <value>',
+            'forget': 'Delete a memory. Usage: !forget <key>',
             'help': 'Show help. Usage: !help [command]',
-            'memory': 'View/set conversation memory. Usage: !memory [1-10]',
+            'memory': 'View/set conversation memory (0=unlimited). Usage: !memory [number]',
             'stats': 'View your usage statistics. Usage: !stats',
             'mood': 'Check the bot\'s current mood. Usage: !mood',
             'relationship': 'Check your relationship level. Usage: !relationship',
+            'compliment': 'Give the bot a compliment. Usage: !compliment',
         }
         
         help_msg = command_help.get(command, f"No help available for '{command}'. Type !help to see all commands.")

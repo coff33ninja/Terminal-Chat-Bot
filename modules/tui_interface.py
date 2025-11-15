@@ -336,6 +336,7 @@ if TEXTUAL_AVAILABLE:
   !stats                View your usage statistics
   !mood                 Check bot's mood
   !relationship         Check your relationship level
+  !compliment           Give the bot a compliment
   exit, quit            Exit the chat
 
 [green]Shortcuts:[/green]
