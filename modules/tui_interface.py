@@ -34,7 +34,9 @@ if TEXTUAL_AVAILABLE:
             self.message_text = message
             self.is_bot = is_bot
             self.message_id = message_id or f"msg_{id(self)}"
-            super().__init__()
+            # Add CSS class based on message type
+            classes = "bot-message" if is_bot else "user-message"
+            super().__init__(classes=classes)
         
         def render(self) -> str:
             """Render the message with proper text wrapping"""
@@ -120,11 +122,21 @@ if TEXTUAL_AVAILABLE:
         ChatMessage {
             margin: 1 0;
             padding: 1 2;
+            height: auto;
+            max-width: 80%;
+            content-align: left top;
+        }
+        
+        ChatMessage.bot-message {
             background: $boost;
             border-left: thick $primary;
-            height: auto;
-            width: 100%;
-            content-align: left top;
+            align: left top;
+        }
+        
+        ChatMessage.user-message {
+            background: $primary-darken-1;
+            border-right: thick $accent;
+            align: right top;
         }
         
         StreamingMessage {
@@ -134,7 +146,8 @@ if TEXTUAL_AVAILABLE:
             border-left: thick $accent;
             text-style: italic;
             height: auto;
-            width: 100%;
+            max-width: 80%;
+            align: left top;
         }
         
         #status-bar {
