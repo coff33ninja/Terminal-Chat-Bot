@@ -313,3 +313,19 @@ class TerminalInterface:
     def clear_screen(self):
         """Clear the terminal screen"""
         os.system('cls' if os.name == 'nt' else 'clear')
+
+    def update_bot_name(self, new_name: str, refresh_welcome: bool = True):
+        """Update the bot name used in prompts and optionally refresh the welcome banner."""
+        try:
+            self.bot_name = new_name
+            if refresh_welcome:
+                try:
+                    self.clear_screen()
+                except Exception:
+                    pass
+                try:
+                    self.display_welcome()
+                except Exception:
+                    pass
+        except Exception:
+            pass

@@ -3,6 +3,8 @@ Persona Manager - Centralized personality system using persona cards
 """
 import json
 import random
+import os
+import glob
 from .bot_name_service import BotNameService
 
 # Constants for persona management
@@ -13,15 +15,48 @@ DEFAULT_AI_PROMPT = "You are a helpful AI assistant."
 AI_GENERATION_TIMEOUT = 15.0  # seconds
 
 class PersonaManager:
+    STATE_FILENAME = "bot_state.json"
+
     def __init__(self, persona_file="persona_card.json", ai_db=None, knowledge_manager=None):
+        # If caller used default, try to load persisted selection
+        if persona_file == DEFAULT_PERSONA_FILE:
+            saved = self._load_selected_persona()
+            if saved:
+                persona_file = saved
+
         self.persona_file = persona_file
         self.persona = self.load_persona()
         # Initialize bot name service with the same persona file
-        self.bot_name_service = BotNameService(persona_file)
+        self.bot_name_service = BotNameService(self.persona_file)
         # Backwards-compatible storage of raw ai_db
         self.ai_db = ai_db
         # Preferred knowledge manager wrapper
         self.knowledge_manager = knowledge_manager
+
+    def _state_file_path(self):
+        """Return absolute path to state file at project root."""
+        root = self._project_root()
+        return os.path.join(root, self.STATE_FILENAME)
+
+    def _save_selected_persona(self, persona_path):
+        try:
+            data = {"selected_persona": os.path.abspath(persona_path)}
+            with open(self._state_file_path(), 'w', encoding='utf-8') as f:
+                json.dump(data, f)
+            return True
+        except Exception:
+            return False
+
+    def _load_selected_persona(self):
+        try:
+            path = self._state_file_path()
+            if not os.path.exists(path):
+                return None
+            with open(path, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+            return data.get('selected_persona')
+        except Exception:
+            return None
 
     def set_ai_db(self, ai_db):
         """Inject an AI DB instance (AIDatabase) for saving generated persona outputs (backwards-compatible)."""
@@ -812,3 +847,84 @@ Generate an authentic response as the character described in the persona card.""
             "most_used_fallbacks": [],
             "missing_response_types": []
         }
+
+    # -----------------
+    # Persona switching
+    # -----------------
+    def _project_root(self):
+        """Return the project root (one level up from modules directory)."""
+        return os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+
+    def list_personas(self, personalities_dir="personality"):
+        """List available persona files in the `personality/` directory.
+
+        Returns list of persona basenames (without extension).
+        """
+        root = self._project_root()
+        dir_path = os.path.join(root, personalities_dir)
+        if not os.path.isdir(dir_path):
+            return []
+
+        files = glob.glob(os.path.join(dir_path, "*.json"))
+        personas = [os.path.splitext(os.path.basename(f))[0] for f in sorted(files)]
+        return personas
+
+    def set_persona_by_name(self, name, personalities_dir="personality"):
+        """Set the current persona by name (filename without .json) from `personality/`.
+
+        Returns (success: bool, message: str).
+        """
+        root = self._project_root()
+        candidate = os.path.join(root, personalities_dir, f"{name}.json")
+        if not os.path.exists(candidate):
+            return False, f"Persona file not found: {candidate}"
+
+        # Update persona_file and reload
+        self.persona_file = candidate
+        self.persona = self.load_persona()
+
+        # Inform bot name service
+        try:
+            self.bot_name_service.set_persona_card_path(self.persona_file)
+            self.bot_name_service.reload_bot_name()
+        except Exception:
+            pass
+
+        # Persist selection
+        try:
+            self._save_selected_persona(self.persona_file)
+        except Exception:
+            pass
+
+        return True, f"Persona switched to '{name}'"
+
+    def set_persona_file(self, file_path):
+        """Set the persona by an explicit file path. Returns (success, message)."""
+        if not os.path.exists(file_path):
+            return False, f"Persona file not found: {file_path}"
+
+        self.persona_file = file_path
+        self.persona = self.load_persona()
+        try:
+            self.bot_name_service.set_persona_card_path(self.persona_file)
+            self.bot_name_service.reload_bot_name()
+        except Exception:
+            pass
+
+        try:
+            self._save_selected_persona(self.persona_file)
+        except Exception:
+            pass
+
+        return True, f"Persona file set to '{file_path}'"
+
+    def get_current_persona_summary(self):
+        """Return a short summary of the loaded persona."""
+        try:
+            return {
+                "name": self.persona.get("name"),
+                "personality": self.persona.get("personality"),
+                "description": self.persona.get("description", "")
+            }
+        except Exception:
+            return {"name": None, "personality": None, "description": ""}

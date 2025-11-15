@@ -168,6 +168,8 @@ class TUIBot:
         self.parser.register_handler('mood', self.handlers.handle_mood)
         self.parser.register_handler('relationship', self.handlers.handle_relationship)
         self.parser.register_handler('compliment', self.handlers.handle_compliment)
+        # Persona management
+        self.parser.register_handler('persona', self.handlers.handle_persona)
         
         # Training data commands
         self.parser.register_handler('training_stats', self.handlers.handle_training_stats)
