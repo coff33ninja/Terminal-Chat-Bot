@@ -409,7 +409,7 @@ if TEXTUAL_AVAILABLE:
                 'mood': 'Check the bot\'s current mood. Usage: !mood',
                 'relationship': 'Check your relationship level. Usage: !relationship',
                 'compliment': 'Give the bot a compliment. Usage: !compliment',
-                'personality': 'Switch bot personality. Usage: !personality [name] (e.g., !personality tsundere)',
+                'personality': 'Switch bot personality. Usage: !personality [name|list] - Use "!personality list" to see all available personalities with descriptions',
             }
             
             help_msg = command_help.get(command, f"No help available for '{command}'. Type !help to see all commands.")

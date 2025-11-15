@@ -567,12 +567,16 @@ Keep chatting with me to improve our relationship!"""
     async def handle_personality(self, args: List[str]) -> str:
         """Handle personality switching"""
         try:
+            # Check for subcommands
+            if args and args[0].lower() == 'list':
+                return await self._list_personalities_detailed()
+            
             if not args:
-                # Show current personality and available personas
+                # Show current personality and quick list
                 current = self.persona_manager.get_current_persona_summary()
                 available = self.persona_manager.list_personas()
                 
-                personas_list = "\n".join([f"  • **{p}**" for p in available])
+                personas_list = ", ".join([f"**{p}**" for p in available])
                 
                 return f"""🎭 Personality Switching
 
@@ -580,13 +584,13 @@ Keep chatting with me to improve our relationship!"""
 **Type:** {current['personality']}
 **Description:** {current.get('description', 'No description')}
 
-**Available Personas:**
-{personas_list}
+**Available Personas:** {personas_list}
 
-**Usage:** !personality <name>
-**Example:** !personality tsundere
+**Commands:**
+  !personality <name>     Switch to a personality
+  !personality list       Show detailed list with descriptions
 
-**Note:** Personas are loaded from the personality/ folder"""
+**Example:** !personality dandere"""
             
             # Switch personality
             persona_name = args[0].lower()
@@ -629,6 +633,58 @@ Keep chatting with me to improve our relationship!"""
         except Exception as e:
             logger.error(f"Personality command error: {e}")
             return f"❌ Error switching personality: {e}"
+    
+    async def _list_personalities_detailed(self) -> str:
+        """List all available personalities with descriptions"""
+        try:
+            import json
+            import os
+            
+            available = self.persona_manager.list_personas()
+            
+            if not available:
+                return "❌ No personalities found in the personality/ folder."
+            
+            result = "🎭 **Available Personalities**\n\n"
+            
+            for persona_name in sorted(available):
+                try:
+                    # Load the persona file to get details
+                    persona_path = os.path.join("personality", f"{persona_name}.json")
+                    
+                    if os.path.exists(persona_path):
+                        with open(persona_path, 'r', encoding='utf-8') as f:
+                            persona_data = json.load(f)
+                        
+                        name = persona_data.get('name', 'Unknown')
+                        personality_type = persona_data.get('personality', persona_name)
+                        description = persona_data.get('description', 'No description available')
+                        
+                        # Truncate long descriptions
+                        if len(description) > 100:
+                            description = description[:97] + "..."
+                        
+                        result += f"**{persona_name}** ({name})\n"
+                        result += f"  Type: {personality_type}\n"
+                        result += f"  {description}\n\n"
+                    else:
+                        result += f"**{persona_name}**\n"
+                        result += "  (Details not available)\n\n"
+                        
+                except Exception as e:
+                    logger.warning(f"Error loading personality {persona_name}: {e}")
+                    result += f"**{persona_name}**\n"
+                    result += "  (Error loading details)\n\n"
+            
+            result += f"**Total:** {len(available)} personalities\n\n"
+            result += "**Usage:** !personality <name>\n"
+            result += "**Example:** !personality dandere"
+            
+            return result
+            
+        except Exception as e:
+            logger.error(f"Error listing personalities: {e}")
+            return f"❌ Error listing personalities: {e}"
     
     # ==================== Training Data Commands ====================
     
