@@ -6,8 +6,8 @@ from typing import Optional
 
 try:
     from textual.app import App, ComposeResult
-    from textual.containers import Container, Vertical, Horizontal, ScrollableContainer
-    from textual.widgets import Header, Footer, Input, Static, Button, Label
+    from textual.containers import Container, Horizontal, ScrollableContainer
+    from textual.widgets import Header, Footer, Input, Static, Button
     from textual.binding import Binding
     from textual.reactive import reactive
     from textual import events
@@ -36,15 +36,12 @@ if TEXTUAL_AVAILABLE:
             self.message_id = message_id or f"msg_{id(self)}"
             super().__init__()
         
-        def compose(self) -> ComposeResult:
-            """Compose the message widget"""
-            with Vertical():
-                if self.is_bot:
-                    yield Label(f"[bold cyan]{self.sender}:[/bold cyan]")
-                    yield Label(f"[white]{self.message_text}[/white]")
-                else:
-                    yield Label(f"[bold green]{self.sender}:[/bold green]")
-                    yield Label(f"[dim]{self.message_text}[/dim]")
+        def render(self) -> str:
+            """Render the message with proper text wrapping"""
+            if self.is_bot:
+                return f"[bold cyan]{self.sender}:[/bold cyan]\n[white]{self.message_text}[/white]"
+            else:
+                return f"[bold green]{self.sender}:[/bold green]\n[dim]{self.message_text}[/dim]"
         
         def on_click(self, event: events.Click) -> None:
             """Handle click events on message"""
@@ -87,7 +84,8 @@ if TEXTUAL_AVAILABLE:
             border: thick $primary;
             background: $panel;
             padding: 1 2;
-            overflow-y: scroll;
+            overflow-y: auto;
+            scrollbar-gutter: stable;
         }
         
         #input-container {
@@ -100,6 +98,8 @@ if TEXTUAL_AVAILABLE:
         
         Input {
             width: 1fr;
+            height: auto;
+            min-height: 3;
             border: solid $accent;
             margin-right: 1;
         }
@@ -123,15 +123,8 @@ if TEXTUAL_AVAILABLE:
             background: $boost;
             border-left: thick $primary;
             height: auto;
-        }
-        
-        ChatMessage Vertical {
-            height: auto;
-        }
-        
-        ChatMessage Label {
-            margin: 0 0 1 0;
-            height: auto;
+            width: 100%;
+            content-align: left top;
         }
         
         StreamingMessage {
@@ -140,6 +133,8 @@ if TEXTUAL_AVAILABLE:
             background: $boost;
             border-left: thick $accent;
             text-style: italic;
+            height: auto;
+            width: 100%;
         }
         
         #status-bar {
