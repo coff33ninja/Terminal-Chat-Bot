@@ -119,6 +119,18 @@ if TEXTUAL_AVAILABLE:
             background: $accent-lighten-1;
         }
         
+        .bot-message-container {
+            width: 100%;
+            height: auto;
+            align: left top;
+        }
+        
+        .user-message-container {
+            width: 100%;
+            height: auto;
+            align: right top;
+        }
+        
         ChatMessage {
             margin: 1 0;
             padding: 1 2;
@@ -130,13 +142,11 @@ if TEXTUAL_AVAILABLE:
         ChatMessage.bot-message {
             background: $boost;
             border-left: thick $primary;
-            align: left top;
         }
         
         ChatMessage.user-message {
             background: $primary-darken-1;
             border-right: thick $accent;
-            align: right top;
         }
         
         StreamingMessage {
@@ -254,13 +264,19 @@ if TEXTUAL_AVAILABLE:
         def add_user_message(self, message: str):
             """Add a user message to the chat"""
             chat_container = self.query_one("#chat-container", ScrollableContainer)
-            chat_container.mount(ChatMessage(self.user_name, message, is_bot=False))
+            # Create a horizontal container for right alignment
+            msg_container = Horizontal(classes="user-message-container")
+            msg_container.mount(ChatMessage(self.user_name, message, is_bot=False))
+            chat_container.mount(msg_container)
             chat_container.scroll_end(animate=False)
         
         def add_bot_message(self, message: str):
             """Add a bot message to the chat"""
             chat_container = self.query_one("#chat-container", ScrollableContainer)
-            chat_container.mount(ChatMessage(self.bot_name, message, is_bot=True))
+            # Create a horizontal container for left alignment
+            msg_container = Horizontal(classes="bot-message-container")
+            msg_container.mount(ChatMessage(self.bot_name, message, is_bot=True))
+            chat_container.mount(msg_container)
             chat_container.scroll_end(animate=False)
             self.update_status("Ready")
 
